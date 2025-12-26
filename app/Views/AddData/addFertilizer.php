@@ -33,7 +33,7 @@
             <!-- ➕ -->
              Add Fertilizer</h3>
 
-        <form action="<?= base_url('api/fertilizer/add') ?>" method="post" enctype="multipart/form-data">
+        <form id="fertilizerForm" method="post" enctype="multipart/form-data">
     <?= csrf_field() ?>
 
     <?php if (isset($validation)) : ?>
@@ -79,5 +79,42 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+$('#fertilizerForm').on('submit', function(e){
+    e.preventDefault();
+
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+        alert('Please login first');
+        window.location.href = "<?= base_url('login') ?>";
+        return;
+    }
+
+    let formData = new FormData(this);
+
+    $.ajax({
+        url: "<?= base_url('api/fertilizer/add') ?>",
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        headers: {
+            "Authorization": "Bearer " + token
+        },
+        success: function(res){
+            alert('Fertilizer added successfully');
+            window.location.href = "<?= base_url('fertilizer') ?>";
+        },
+        error: function(xhr){
+            console.log(xhr.responseJSON);
+            alert(xhr.responseJSON?.message ?? 'Error');
+        }
+    });
+});
+</script>
+
+
 </body>
 </html>
