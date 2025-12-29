@@ -101,17 +101,22 @@ function deleteFertilizer(id)
 
     $.ajax({
         url: "<?= base_url('api/fertilizer/delete') ?>/" + id,
-        type: "DELETE",
-        headers: {
-            "Authorization": "Bearer " + token
+        method: "DELETE",
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader(
+                "Authorization",
+                "Bearer " + token
+            );
         },
         success: function () {
             location.reload();
         },
-        error: function () {
+        error: function (xhr) {
+            console.log(xhr.responseText);
             alert('Delete failed');
         }
     });
+
 }
 
 </script>

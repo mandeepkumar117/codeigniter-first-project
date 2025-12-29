@@ -70,6 +70,8 @@
                     <a
                         class="nav-link dropdown-toggle"
                         href="<?= base_url('fertilizer') ?>"
+                        role="button"
+                        data-bs-toggle="dropdown"
                     >
                         Fertilizer
                     </a>

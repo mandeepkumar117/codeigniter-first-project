@@ -143,12 +143,23 @@ class FertilizerApi extends BaseController
 
     public function delete($id)
     {
+        log_message('debug', 'DELETE ID: '.$id);
+    
         $model = new FertilizerModel();
+    
+        if (!$model->find($id)) {
+            return $this->response->setJSON([
+                'status' => false,
+                'message' => 'Record not found'
+            ]);
+        }
+    
         $model->delete($id);
     
         return $this->response->setJSON([
             'status' => true,
-            'message' => 'Fertilizer deleted successfully'
+            'message' => 'Deleted successfully'
         ]);
     }
+
 }

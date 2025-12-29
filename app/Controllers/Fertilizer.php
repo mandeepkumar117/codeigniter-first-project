@@ -11,7 +11,6 @@ class Fertilizer extends BaseController
     }
     public function add()
     {
-        // सिर्फ form दिखाने के लिए
         return view('addData/addFertilizer');
     }
     public function edit($id)

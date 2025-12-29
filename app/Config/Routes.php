@@ -22,6 +22,8 @@ $routes->group('api', function ($routes) {
     $routes->post('signup', 'Api\AuthApi::signup');
     $routes->post('login',  'Api\AuthApi::login');
     $routes->get('fertilizer/list', 'Api\FertilizerApi::listFertilizer');
+    $routes->get('gemini-test', 'Api\GeminiTest::index');
+    
 
     // PROTECTED
     $routes->group('', ['filter' => 'jwt'], function ($routes) {
