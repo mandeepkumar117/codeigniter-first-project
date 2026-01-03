@@ -6,11 +6,8 @@
     <title>Agriculture Management</title>
 
     <!-- Bootstrap CSS -->
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    />
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="<?= base_url('css/style.css') ?>">
 </head>
@@ -57,7 +54,6 @@
                         class="nav-link dropdown-toggle"
                         href="<?= base_url('/') ?>"
                         role="button"
-                        data-bs-toggle="dropdown"
                     >
                         Home
                     </a>
@@ -71,7 +67,6 @@
                         class="nav-link dropdown-toggle"
                         href="<?= base_url('fertilizer') ?>"
                         role="button"
-                        data-bs-toggle="dropdown"
                     >
                         Fertilizer
                     </a>
@@ -85,7 +80,6 @@
                         class="nav-link dropdown-toggle"
                         href="<?= base_url('seeds') ?>"
                         role="button"
-                        data-bs-toggle="dropdown"
                     >
                         Seeds
                     </a>
@@ -100,7 +94,6 @@
                         class="nav-link dropdown-toggle"
                         href="<?= base_url('crops') ?>"
                         role="button"
-                        data-bs-toggle="dropdown"
                     >
                         Crops
                     </a>
@@ -113,53 +106,108 @@
                     </ul>                    
                 </li>                
             </ul>
-             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a id="loginLink" class="nav-link fw-semibold text-white" href="<?= base_url('login') ?>">
+                        🔐 Login
+                    </a>
+                </li>            
+                <li class="nav-item">
+                    <a id="logoutBtn" class="nav-link fw-semibold text-white d-none" href="#">
+                        🚪 Logout
+                    </a>
+                </li>
+            </ul>
+            <li class="nav-item">
+              <a class="nav-link text-white position-relative" href="<?= base_url('cart') ?>">
+                    <i class="bi bi-cart-plus fs-5"></i>
+                    <!-- <i class="bi bi-cart-plus"></i>         -->
+                    <!-- <i class="bi bi-cart"></i>             
+                    <i class="bi bi-cart-check"></i>       Added -->
 
-    <li class="nav-item">
-        <a id="loginLink" class="nav-link fw-semibold text-white" href="<?= base_url('login') ?>">
-            🔐 Login
-        </a>
-    </li>
 
-    <li class="nav-item">
-        <a id="logoutBtn" class="nav-link fw-semibold text-white d-none" href="#">
-            🚪 Logout
-        </a>
-    </li>
-
-</ul>
-
+                    <!-- cart count badge (optional) -->
+                    <span id="cartCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        0
+                    </span>
+              </a>
+            </li>
         </div>
     </div>
 </nav>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
+    /* =========================
+       LOGIN / LOGOUT TOGGLE
+    ========================= */
     const token = localStorage.getItem('token');
 
     const loginLink = document.getElementById('loginLink');
     const logoutBtn = document.getElementById('logoutBtn');
 
-    if (token) {
-        loginLink.classList.add('d-none');
-        logoutBtn.classList.remove('d-none');
-    } else {
-        loginLink.classList.remove('d-none');
-        logoutBtn.classList.add('d-none');
+    if (loginLink && logoutBtn) {
+        if (token) {
+            loginLink.classList.add('d-none');
+            logoutBtn.classList.remove('d-none');
+        } else {
+            loginLink.classList.remove('d-none');
+            logoutBtn.classList.add('d-none');
+        }
+
+        logoutBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            window.location.href = "<?= base_url('login') ?>";
+        });
     }
 
-    logoutBtn.addEventListener('click', function (e) {
-        e.preventDefault();
+    /* =========================
+       NAVBAR HOVER DROPDOWN
+    ========================= */
+    if (window.innerWidth > 992) {
 
-        localStorage.removeItem('token');
+        document.querySelectorAll('.navbar .dropdown').forEach(function (dropdown) {
 
-        window.location.href = "<?= base_url('login') ?>";
+            const toggle = dropdown.querySelector('.dropdown-toggle');
+            if (!toggle) return;
+
+            const instance = bootstrap.Dropdown.getOrCreateInstance(toggle);
+
+            dropdown.addEventListener('mouseenter', function () {
+                instance.show();
+            });
+
+            dropdown.addEventListener('mouseleave', function () {
+                instance.hide();
+            });
+        });
+    }
+
+});
+
+function updateCartCount()
+{
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    $.ajax({
+        url: "<?= base_url('api/cart/count') ?>",
+        headers: {
+            Authorization: "Bearer " + token
+        },
+        success: function (res) {
+            $('#cartCount').text(res.count);
+        }
     });
+}
+
+$(function () {
+    updateCartCount();
 });
 </script>
-
-
-
 
 </body>

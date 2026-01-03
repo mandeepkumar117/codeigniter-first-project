@@ -17,8 +17,7 @@ class GeminiTest extends Controller
             ]);
         }
 
-        // ✅ FORM POST DATA (IMPORTANT)
-        $question = $this->request->getPost('question');
+        $question = $this->request->getVar('question');
 
         if (!$question) {
             return $this->response->setJSON([
@@ -27,32 +26,36 @@ class GeminiTest extends Controller
             ]);
         }
 
-        $url = "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={$apiKey}";
+        $url = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent?key={$apiKey}";
+
 
         $payload = [
-            "contents" => [[
-                "parts" => [[
-                    "text" => $question
-                ]]
-            ]]
-        ];
+        "contents" => [
+            [
+                "role" => "user",
+                "parts" => [
+                    ["text" => $question]
+                ]
+            ]
+        ]
+];
+
 
         $client = \Config\Services::curlrequest();
 
-        $res = $client->POST($url, [
+        $res = $client->post($url, [
             'headers' => ['Content-Type' => 'application/json'],
-            'body'    => json_encode($payload),
+            'body' => json_encode($payload),
+            'verify' => false,
             'http_errors' => false
         ]);
-
+        
         $result = json_decode($res->getBody(), true);
-
-        $answer = $result['candidates'][0]['content']['parts'][0]['text']
-            ?? 'AI ne jawab nahi diya';
-
+        
         return $this->response->setJSON([
-            'status' => true,
-            'answer' => $answer
+            'http_code' => $res->getStatusCode(),
+            'full_response' => $result
         ]);
+
     }
 }

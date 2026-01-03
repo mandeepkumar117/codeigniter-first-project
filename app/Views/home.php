@@ -7,21 +7,27 @@
     <a href="<?= base_url('login') ?>" class="btn btn-success mt-3">
         Login
     </a>
+
+    <hr class="my-4">
+
+    <h2>🌾 Krishi AI Salah</h2>
+
+    <textarea id="question" rows="4" cols="50"
+        class="form-control mt-3"
+        placeholder="Apna sawal likhiye..."></textarea>
+
+    <button id="askBtn" onclick="askAI()" class="btn btn-primary mt-3">
+        Sawal Poochho
+    </button>
+
+    <pre id="answer" class="mt-3 text-start"></pre>
 </div>
-<h2>🌾 Krishi AI Salah</h2>
-
-<textarea id="question" rows="4" cols="50"
-  placeholder="Apna sawal likhiye..."></textarea>
-<br><br>
-
-<button onclick="askAI()">Sawal Poochho</button>
-
-<pre id="answer"></pre>
 
 <script>
 function askAI() {
     const question = document.getElementById('question').value;
     const ans = document.getElementById('answer');
+    const btn = document.getElementById('askBtn');
 
     if (question.trim() === '') {
         ans.innerText = '❌ Sawal likhiye';
@@ -29,6 +35,7 @@ function askAI() {
     }
 
     ans.innerText = '⏳ AI soch raha hai...';
+    btn.disabled = true;
 
     const formData = new FormData();
     formData.append('question', question);
@@ -37,27 +44,24 @@ function askAI() {
         method: "POST",
         body: formData
     })
-    .then(response => response.json())
+    .then(res => res.json())
     .then(data => {
-        console.log(data); // 🔥 DEBUG
+        console.log(data);
 
-        if (data.answer) {
-            ans.innerText = data.answer;
+        if (data.status === false) {
+            ans.innerText = '❌ ' + data.answer;
         } else {
-            ans.innerText = '❌ Undefined response de raha hai';
+            ans.innerText = data.answer ?? '❌ AI ne jawab nahi diya';
         }
     })
     .catch(err => {
         ans.innerText = '❌ Network error';
         console.error(err);
+    })
+    .finally(() => {
+        btn.disabled = false;
     });
 }
 </script>
-
-
-
-
-
-
 
 <?= view('layout/footer') ?>
